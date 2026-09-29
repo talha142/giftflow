@@ -118,7 +118,7 @@ h2 { font-size: 15px; font-weight: 700; margin: 22px 0 10px; color: var(--t); }
   padding: 22px;
 }
 .hero .mu { color: rgba(255,255,255,.75); }
-.big { font-size: 38px; font-weight: 800; margin: 4px 0 2px; letter-spacing: -1px; }
+.big { font-size: clamp(26px, 7vw, 36px); font-weight: 800; margin: 4px 0 2px; letter-spacing: -0.5px; }
 .bal-label { font-size: 13px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
 .coin-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
 .coin-pill {
@@ -446,7 +446,7 @@ input::placeholder { color: var(--m); font-weight: 500; }
 </div>
 
 <script>
-const $ = s => document.querySelector(s), KEY = 'kudopay_v1';
+const $ = s => document.querySelector(s), KEY = 'kudopay_v2';
 
 // Creators: [username, displayName, bio, followers, hue, isCustom]
 const CR = [
@@ -475,24 +475,24 @@ const PK = [[100,1],[500,5],[1000,10],[5000,50],[10000,100]];
 
 const TT = { buy:'Buy Coins', add:'Add Creator', prof:'Creator Profile', gift:'Choose Gift', money:'Send Money', conf:'Review & Pay', inv:'Receipt' };
 
-const $$ = n => '$' + n.toFixed(2);
-const N = n => n.toLocaleString();
+const $$ = n => '$' + Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const N = n => Number(n).toLocaleString('en-US');
 const AL = () => CR.concat(S.cr || []);
 const cr = id => AL().find(c => c[0] === id);
 const dt = t => new Date(t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
-const tid = () => 'GF-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,6).toUpperCase();
+const tid = () => 'KP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,6).toUpperCase();
 
 function seed() {
   const d = 864e5, n = Date.now();
-  const m = (i, ty, ti, u, c, cid) => ({ id:'GF'+i, ts: n-i*d, type:ty, title:ti, usd:u, coins:c, cid, st:'Completed' });
+  const m = (i, ty, ti, u, c, cid) => ({ id:'KP'+i, ts: n-i*d, type:ty, title:ti, usd:u, coins:c, cid, st:'Completed' });
   return {
-    bal: 250,
-    coins: 1200,
+    bal: 3460000.00,
+    coins: 3460000,
     tx: [
-      m(1,'gift','🌹 Rose sent to @lunaray',0,-50,'lunaray'),
-      m(2,'money','Sent to @chefmateo',-15,0,'chefmateo'),
-      m(4,'coins','Purchased 1,000 coins',-10,1000,''),
-      m(6,'gift','💎 Diamond sent to @beatbyjay',0,-500,'beatbyjay')
+      m(1,'gift','💎 Diamond sent to @lunaray',0,-500,'lunaray'),
+      m(2,'money','Sent to @chefmateo',-1500,0,'chefmateo'),
+      m(4,'coins','Purchased 250,000 coins',-2500,250000,''),
+      m(6,'gift','🚀 Rocket sent to @beatbyjay',0,-2500,'beatbyjay')
     ]
   };
 }
@@ -543,6 +543,7 @@ const bal = () => `<div class="card hero">
   <div class="big">${$$(S.bal)}</div>
   <div class="coin-row">
     <div class="coin-pill">🪙 ${N(S.coins)} coins</div>
+    <div class="coin-pill" style="background:rgba(255,255,255,.14)">≈ $3.46M</div>
   </div>
 </div>`;
 
@@ -753,7 +754,7 @@ const V = {
     ${bal()}
     <div class="two">
       <button class="btn" onclick="go('buy')" id="btn-wallet-buy">🪙 Buy Coins</button>
-      <button class="btn s" onclick="S.bal+=100;save();toast('$100.00 added to your wallet');view()" id="btn-add-funds">＋ Add Funds</button>
+      <button class="btn s" onclick="S.bal+=100000;save();toast('$100,000.00 added to your wallet');view()" id="btn-add-funds">＋ Add Funds</button>
     </div>
     <div class="section-label">Recent Transactions</div>
     ${S.tx.slice(0,5).map(R).join('') || '<div class="empty"><div class="e-icon">📭</div><b>No transactions yet</b></div>'}
