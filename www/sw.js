@@ -1,4 +1,4 @@
-const C = 'kudopay-v4';
+const C = 'kudopay-v5';
 const A = ['./', './index.html', './manifest.json', './icon-512.png'];
 
 self.addEventListener('install', e => {
@@ -16,6 +16,8 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
+  // Don't intercept API calls — always fetch live
+  if (e.request.url.includes('/api/')) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {

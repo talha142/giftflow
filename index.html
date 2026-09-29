@@ -195,7 +195,44 @@ h2 { font-size: 15px; font-weight: 700; margin: 22px 0 10px; color: var(--t); }
 .row > div:nth-child(2) { flex: 1; min-width: 0; }
 .row b { display: block; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* ── Avatar ── */
+/* ── TikTok Avatar ── */
+.tt-av {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: none;
+  background: var(--b2);
+  border: 2px solid var(--b);
+}
+.tt-av-lg {
+  width: 90px; height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--b2);
+  border: 3px solid var(--b);
+}
+/* Shimmer skeleton */
+@keyframes shimmer { 0%{background-position:-400px 0} 100%{background-position:400px 0} }
+.skel {
+  background: linear-gradient(90deg, var(--b2) 25%, var(--b) 50%, var(--b2) 75%);
+  background-size: 800px 100%;
+  animation: shimmer 1.4s infinite;
+  border-radius: 12px;
+  display: block;
+}
+/* Live TT badge */
+.tt-badge {
+  background: #fe2c55;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  border-radius: 4px;
+  padding: 2px 5px;
+  margin-left: 4px;
+  letter-spacing: .5px;
+  vertical-align: middle;
+}
+/* ── Avatar (initials fallback) ── */
 .av {
   border-radius: 50%;
   display: grid;
@@ -577,10 +614,12 @@ const V = {
 
   search: () => `
     <h1>Discover Creators</h1>
-    <p class="mu" style="margin-bottom:14px">Find and support your favourite creators</p>
-    <input id="q" placeholder="Search by name or @username" oninput="sq(this.value)" autocomplete="off" id="search-input">
+    <p class="mu" style="margin-bottom:14px">Search any TikTok <strong>@username</strong> to find and support real creators</p>
+    <div style="position:relative">
+      <input id="q" placeholder="Search @username (e.g. mrbeast, khaby.lame)" oninput="sq(this.value)" autocomplete="off" style="padding-right:42px">
+      <span style="position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:18px;pointer-events:none" id="sq-spinner"></span>
+    </div>
     <div id="sl" style="margin-top:14px">${AL().map(CRow).join('')}</div>
-    <button class="btn s" style="margin-top:6px" onclick="F={};go('add')" id="btn-add-creator">＋ Add Creator</button>
   `,
 
   add: () => `
@@ -606,11 +645,19 @@ const V = {
 
   prof: id => {
     const c = cr(id);
+    const isTT = c && c[6]; // c[6] = TikTok data object
+    const tt = isTT ? c[6] : null;
+    const avatarHtml = (tt && tt.avatar)
+      ? `<img src="${tt.avatar}" class="tt-av-lg" onerror="this.style.display='none'" alt="${c[1]}">`
+      : AV(c, 90);
     return `
       <div class="ctr" style="padding-top:10px">
-        <div style="display:flex;justify-content:center;margin-bottom:14px">${AV(c,96)}</div>
-        <h1 style="font-size:24px;margin-bottom:4px">${c[1]} ${VB(c)}</h1>
-        <div class="mu" style="margin-bottom:12px">@${c[0]}${c[5] ? '' : ' · Verified Creator'}</div>
+        <div style="display:flex;justify-content:center;margin-bottom:14px">${avatarHtml}</div>
+        <h1 style="font-size:24px;margin-bottom:4px">${c[1]} ${VB(c)}
+          ${tt ? '<span class="tt-badge">TikTok LIVE</span>' : ''}
+        </h1>
+        <div class="mu" style="margin-bottom:12px">@${c[0]}${(!c[5] && !tt) ? ' · Verified Creator' : ''}</div>
+        ${tt ? `<a href="https://www.tiktok.com/@${c[0]}" target="_blank" rel="noopener" class="mu" style="font-size:12px;display:block;margin-bottom:12px">View on TikTok ↗</a>` : ''}
         <p style="margin-bottom:18px;color:var(--t);line-height:1.5">${c[2]}</p>
         <div class="stat-card" style="margin:0 auto 20px;max-width:160px">
           <b>${c[3]}</b><span>Followers</span>
@@ -832,17 +879,97 @@ const go = (n,a) => { st.push([n,a]); $('#m').scrollTop=0; view(); };
 const back = () => { if(st.length>1) st.pop(); view(); };
 const tab = n => { st=[[n]]; rst=false; view(); };
 
+// TikTok profile row (for live-fetched results)
+const TTRow = (p) => `<div class="row" onclick="useTT('${p.username}')">
+  <img src="${p.avatar}" class="tt-av" onerror="this.style.display='none'" alt="${p.displayName}">
+  <div>
+    <b>${p.displayName} <span class="tt-badge">TikTok</span></b>
+    <span class="mu">@${p.username} · ${p.followers} followers</span>
+  </div>
+  <span class="mu" style="font-size:18px">›</span>
+</div>`;
+
+// Save a fetched TikTok profile into local list and open it
+function useTT(username) {
+  let existing = cr(username);
+  if (!existing) {
+    const cached = window._ttCache && window._ttCache[username];
+    if (cached) {
+      S.cr = S.cr || [];
+      const hue = Math.floor(Math.random() * 360);
+      // [username, displayName, bio, followers, hue, isCustom, ttData]
+      S.cr.push([username, cached.displayName, cached.bio || `TikTok creator @${username}`, cached.followers, hue, 1, cached]);
+      save();
+    }
+  }
+  go('prof', username);
+}
+
+let _sqTimer = null;
 function sq(v) {
-  v = v.toLowerCase().replace(/^@/,'').trim();
-  const u = v.replace(/[^a-z0-9._]/g,'');
-  const l = AL().filter(c => (c[0]+c[1]).toLowerCase().includes(v));
-  $('#sl').innerHTML = l.map(CRow).join('') || `
-    <div class="card" style="text-align:center;padding:28px">
-      <div style="font-size:40px;margin-bottom:10px">🔎</div>
-      <b>No creator found</b>
-      <p class="mu" style="margin:8px 0 14px">Can't find "@${u || v}"? Add them manually.</p>
-      ${u.length>1 ? `<button class="btn" onclick="F={nu:'${u}'};go('add')">Add @${u||v}</button>` : ''}
+  v = v.toLowerCase().replace(/^@/, '').trim();
+  const u = v.replace(/[^a-z0-9._]/g, '');
+
+  // First: filter local creators
+  const local = AL().filter(c => (c[0] + c[1]).toLowerCase().includes(v));
+  if (local.length) {
+    $('#sl').innerHTML = local.map(CRow).join('');
+    const spinner = $('#sq-spinner');
+    if (spinner) spinner.textContent = '';
+    return;
+  }
+
+  // If empty, reset
+  if (!u || u.length < 2) {
+    $('#sl').innerHTML = AL().map(CRow).join('');
+    const spinner = $('#sq-spinner');
+    if (spinner) spinner.textContent = '';
+    return;
+  }
+
+  // Show shimmer while waiting
+  $('#sl').innerHTML = `
+    <div class="row" style="gap:12px">
+      <span class="skel" style="width:46px;height:46px;border-radius:50%;flex:none"></span>
+      <div style="flex:1">
+        <span class="skel" style="width:55%;height:14px;margin-bottom:8px"></span>
+        <span class="skel" style="width:40%;height:11px"></span>
+      </div>
     </div>`;
+  const spinner = $('#sq-spinner');
+  if (spinner) spinner.textContent = '⏳';
+
+  clearTimeout(_sqTimer);
+  _sqTimer = setTimeout(async () => {
+    try {
+      const res = await fetch(`/api/tiktok?username=${encodeURIComponent(u)}`);
+      const data = await res.json();
+      if (spinner) spinner.textContent = '';
+
+      if (res.ok && data.username) {
+        // Cache the result
+        window._ttCache = window._ttCache || {};
+        window._ttCache[data.username] = data;
+
+        $('#sl').innerHTML = TTRow(data);
+      } else {
+        $('#sl').innerHTML = `
+          <div class="card" style="text-align:center;padding:28px">
+            <div style="font-size:40px;margin-bottom:10px">🔎</div>
+            <b>TikTok creator not found</b>
+            <p class="mu" style="margin:8px 0 0">No TikTok account found for @${u}</p>
+          </div>`;
+      }
+    } catch (e) {
+      if (spinner) spinner.textContent = '';
+      $('#sl').innerHTML = `
+        <div class="card" style="text-align:center;padding:28px">
+          <div style="font-size:40px;margin-bottom:10px">⚠️</div>
+          <b>Could not reach TikTok</b>
+          <p class="mu" style="margin:8px 0 0">Check your connection and try again.</p>
+        </div>`;
+    }
+  }, 450);
 }
 
 function toast(m) {
@@ -999,7 +1126,7 @@ setTimeout(() => {
   setTimeout(() => $('#sp').remove(), 520);
 }, 1200);
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js?v=4').then(r=>r.update()).catch(()=>{});
+  navigator.serviceWorker.register('sw.js?v=5').then(r=>r.update()).catch(()=>{});
 }
 </script>
 </body>
