@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6c4cf5">
+<meta name="description" content="GiftFlow — Send gifts and money to your favourite creators instantly.">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>GiftFlow — Gift Creators You Love</title>
+<style>
+:root {
+  --bg: #f5f4fb;
+  --c: #ffffff;
+  --t: #12102b;
+  --m: #6e6b8a;
+  --p: #6c4cf5;
+  --p2: #ff5fa2;
+  --ok: #16a34a;
+  --b: #e8e4f4;
+  --b2: #f0edfb;
+  --g: linear-gradient(135deg, #6c4cf5 0%, #ff5fa2 100%);
+  --sh: 0 4px 24px rgba(108,76,245,0.10);
+  --sh2: 0 2px 8px rgba(108,76,245,0.08);
+  --r: 20px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0c0a1e;
+    --c: #16133a;
+    --t: #f0eeff;
+    --m: #9b98bb;
+    --b: #24204d;
+    --b2: #1c1940;
+  }
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--t);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  -webkit-font-smoothing: antialiased;
+}
+#app {
+  max-width: 480px;
+  height: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: var(--bg);
+  padding-top: env(safe-area-inset-top, 0px);
+  overflow: hidden;
+}
+
+/* ── Scrollable main ── */
+#m { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; }
+#m::-webkit-scrollbar { display: none; }
+
+/* ── Page animation ── */
+.pg { padding: 16px 18px 100px; animation: pgIn .25s cubic-bezier(.22,1,.36,1); }
+@keyframes pgIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes pop { 0% { transform: scale(.3); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes dr { to { stroke-dashoffset: 0; } }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+/* ── Typography ── */
+h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 4px; }
+h2 { font-size: 15px; font-weight: 700; margin: 22px 0 10px; color: var(--t); }
+.mu { color: var(--m); font-size: 13px; font-weight: 500; }
+
+/* ── Header ── */
+.hd {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 18px 2px;
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  z-index: 5;
+}
+.hd b { font-size: 17px; font-weight: 700; flex: 1; }
+.bk {
+  width: 38px; height: 38px;
+  border-radius: 12px;
+  border: 1.5px solid var(--b);
+  background: var(--c);
+  color: var(--t);
+  font-size: 20px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background .15s;
+}
+.bk:hover { background: var(--b2); }
+
+/* ── Cards ── */
+.card {
+  background: var(--c);
+  border: 1.5px solid var(--b);
+  border-radius: var(--r);
+  padding: 18px;
+  margin-bottom: 12px;
+  box-shadow: var(--sh2);
+}
+.hero {
+  background: var(--g);
+  color: #fff;
+  border: 0;
+  box-shadow: 0 12px 36px rgba(108,76,245,.28);
+  border-radius: 24px;
+  padding: 22px;
+}
+.hero .mu { color: rgba(255,255,255,.75); }
+.big { font-size: 38px; font-weight: 800; margin: 4px 0 2px; letter-spacing: -1px; }
+.bal-label { font-size: 13px; font-weight: 600; opacity: .8; margin-bottom: 2px; }
+.coin-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+.coin-pill {
+  background: rgba(255,255,255,.18);
+  border-radius: 99px;
+  padding: 5px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Buttons ── */
+.btn {
+  display: block;
+  width: 100%;
+  border: 0;
+  border-radius: 16px;
+  padding: 15px;
+  font: 700 16px 'Inter', system-ui;
+  background: var(--g);
+  color: #fff;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+  box-shadow: 0 4px 16px rgba(108,76,245,.25);
+}
+.btn:active { transform: scale(.97); box-shadow: none; }
+.btn.s {
+  background: var(--c);
+  color: var(--p);
+  border: 1.5px solid var(--b);
+  box-shadow: var(--sh2);
+}
+.btn.s:active { transform: scale(.97); }
+.btn.ok-btn { background: var(--ok); box-shadow: 0 4px 16px rgba(22,163,74,.22); }
+
+/* ── Quick-action tiles ── */
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.tile {
+  background: var(--c);
+  border: 1.5px solid var(--b);
+  border-radius: 18px;
+  padding: 16px 6px 14px;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, transform .12s;
+  color: var(--t);
+  font: inherit;
+  box-shadow: var(--sh2);
+}
+.tile:active { transform: scale(.96); }
+.tile.on { border-color: var(--p); background: rgba(108,76,245,.07); transform: scale(1.03); }
+.tile .e { font-size: 32px; margin-bottom: 4px; }
+.tile b { display: block; font-size: 13px; font-weight: 700; }
+.tile .tc { font-size: 12px; color: var(--m); margin-top: 2px; }
+
+/* ── List rows ── */
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--c);
+  border: 1.5px solid var(--b);
+  border-radius: 16px;
+  padding: 13px 14px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: transform .12s, background .12s;
+  box-shadow: var(--sh2);
+}
+.row:active { transform: scale(.98); background: var(--b2); }
+.row > div:nth-child(2) { flex: 1; min-width: 0; }
+.row b { display: block; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── Avatar ── */
+.av {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-weight: 800;
+  flex: none;
+  letter-spacing: -0.5px;
+}
+.vb {
+  color: #fff;
+  background: #1d9bf0;
+  border-radius: 50%;
+  font-size: 9px;
+  padding: 1px 4px;
+  vertical-align: middle;
+}
+
+/* ── Chips ── */
+.chips { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
+.chips::-webkit-scrollbar { display: none; }
+.chip {
+  border: 1.5px solid var(--b);
+  background: var(--c);
+  color: var(--t);
+  border-radius: 99px;
+  padding: 8px 16px;
+  font: 600 13px 'Inter', system-ui;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: .15s;
+}
+.chip.on { background: var(--g); color: #fff; border-color: transparent; box-shadow: 0 2px 10px rgba(108,76,245,.25); }
+
+/* ── Inputs ── */
+input, textarea {
+  width: 100%;
+  border: 1.5px solid var(--b);
+  background: var(--c);
+  color: var(--t);
+  border-radius: 14px;
+  padding: 14px 16px;
+  font: 600 16px 'Inter', system-ui;
+  outline: none;
+  transition: border-color .15s, box-shadow .15s;
+}
+input:focus, textarea:focus {
+  border-color: var(--p);
+  box-shadow: 0 0 0 3px rgba(108,76,245,.12);
+}
+input::placeholder { color: var(--m); font-weight: 500; }
+.input-group { margin-bottom: 12px; }
+.input-label { font-size: 12px; font-weight: 700; color: var(--m); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .06em; }
+.amt { font-size: 36px; font-weight: 800; text-align: center; letter-spacing: -1px; }
+
+/* ── Tx colors ── */
+.pos { color: var(--ok); font-weight: 700; }
+.neg { color: var(--t); font-weight: 700; }
+.r { text-align: right; font-weight: 700; font-size: 14px; }
+
+/* ── Bottom nav ── */
+#nav {
+  display: flex;
+  background: var(--c);
+  border-top: 1.5px solid var(--b);
+  padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -4px 20px rgba(108,76,245,.06);
+}
+#nav button {
+  flex: 1;
+  border: 0;
+  background: none;
+  color: var(--m);
+  font: 600 10px 'Inter', system-ui;
+  padding: 6px 2px;
+  cursor: pointer;
+  transition: color .2s;
+}
+#nav button span { display: block; font-size: 22px; transition: transform .2s; margin-bottom: 2px; }
+#nav button.on { color: var(--p); }
+#nav button.on span { transform: translateY(-2px) scale(1.15); }
+
+/* ── States ── */
+.ctr { text-align: center; padding: 40px 18px 24px; }
+.spn {
+  width: 80px; height: 80px;
+  border: 6px solid var(--b);
+  border-top-color: var(--p);
+  border-radius: 50%;
+  margin: 0 auto 28px;
+  animation: spin .8s linear infinite;
+}
+.ok-circle {
+  width: 96px; height: 96px;
+  border-radius: 50%;
+  background: var(--ok);
+  margin: 0 auto 20px;
+  display: grid;
+  place-items: center;
+  animation: pop .5s;
+  box-shadow: 0 8px 30px rgba(22,163,74,.3);
+}
+.ok-circle path { stroke-dasharray: 40; stroke-dashoffset: 40; animation: dr .5s .3s forwards; }
+
+/* ── Invoice ── */
+.inv {
+  background: var(--c);
+  color: var(--t);
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 8px 40px rgba(108,76,245,.12);
+  border: 1.5px solid var(--b);
+}
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid var(--b);
+}
+.inv-brand { font-size: 22px; font-weight: 800; display: flex; align-items: center; gap: 8px; }
+.inv-badge {
+  background: linear-gradient(135deg,#6c4cf5,#ff5fa2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 99px;
+  letter-spacing: .06em;
+}
+.inv .l {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--b);
+  font-size: 14px;
+}
+.inv .l:last-child { border-bottom: 0; }
+.inv .l span:first-child { color: var(--m); font-weight: 500; }
+.inv .l b { text-align: right; word-break: break-all; font-weight: 700; }
+
+/* ── Toast ── */
+#toast {
+  position: absolute;
+  left: 50%;
+  bottom: 96px;
+  transform: translateX(-50%) translateY(16px);
+  background: rgba(18,16,43,.95);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity .25s, transform .25s;
+  pointer-events: none;
+  z-index: 99;
+  max-width: 88%;
+  text-align: center;
+  white-space: nowrap;
+  box-shadow: 0 4px 20px rgba(0,0,0,.2);
+}
+#toast.s { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── Splash ── */
+#sp {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: var(--g);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  transition: opacity .55s cubic-bezier(.22,1,.36,1);
+}
+#sp .sp-icon { font-size: 72px; animation: pop .7s; margin-bottom: 12px; }
+#sp h1 { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+#sp .sp-sub { font-size: 15px; opacity: .8; margin-top: 6px; font-weight: 500; }
+
+/* ── Section label ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--m);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin: 24px 0 10px;
+}
+
+/* ── Stats bar ── */
+.stats-bar {
+  display: flex;
+  gap: 10px;
+  margin: 14px 0;
+}
+.stat-card {
+  flex: 1;
+  background: var(--c);
+  border: 1.5px solid var(--b);
+  border-radius: 16px;
+  padding: 14px 12px;
+  text-align: center;
+  box-shadow: var(--sh2);
+}
+.stat-card b { display: block; font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+.stat-card span { font-size: 12px; color: var(--m); font-weight: 600; }
+
+/* ── Tag ── */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--b2);
+  border-radius: 99px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--p);
+}
+
+/* ── Divider ── */
+.divider { height: 1px; background: var(--b); margin: 16px 0; border: 0; }
+
+/* ── Empty state ── */
+.empty { text-align: center; padding: 40px 20px; color: var(--m); }
+.empty .e-icon { font-size: 48px; margin-bottom: 12px; }
+.empty b { display: block; font-size: 16px; color: var(--t); margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <!-- Splash -->
+  <div id="sp">
+    <div class="sp-icon">🎁</div>
+    <h1>GiftFlow</h1>
+    <p class="sp-sub">Send gifts to creators you love</p>
+  </div>
+
+  <div id="m"></div>
+  <nav id="nav"></nav>
+  <div id="toast"></div>
+</div>
+
+<script>
+const $ = s => document.querySelector(s), KEY = 'giftflow_v2';
+
+// Creators: [username, displayName, bio, followers, hue, isCustom]
+const CR = [
+  ["lunaray","Luna Ray","Dance & lifestyle creator ✨","2.4M",280],
+  ["chefmateo","Chef Mateo","60-second recipes, big flavor 🍝","1.8M",25],
+  ["pixelpaws","Pixel Paws","Cozy gaming with my two cats 🐾","920K",200],
+  ["zaraflows","Zara Flows","Yoga, breathwork & calm mornings","610K",150],
+  ["beatbyjay","Beat by Jay","Producer. Beats made live 🎧","1.1M",260],
+  ["nomadnina","Nomad Nina","Travel diaries from 40 countries 🌍","3.2M",45],
+  ["techwithtariq","Tariq Tech","Gadgets explained simply","405K",215],
+  ["artbyamara","Amara Art","Watercolor & sketchbook tours 🎨","780K",330]
+];
+
+// Gifts: [name, emoji, coins]
+const GF = [
+  ["Heart","❤️",10],
+  ["Rose","🌹",50],
+  ["Gift Box","🎁",100],
+  ["Diamond","💎",500],
+  ["Crown","👑",1000],
+  ["Rocket","🚀",2500]
+];
+
+// Coin packages: [coins, usd]
+const PK = [[100,1],[500,5],[1000,10],[5000,50],[10000,100]];
+
+const TT = { buy:'Buy Coins', add:'Add Creator', prof:'Creator Profile', gift:'Choose Gift', money:'Send Money', conf:'Review & Pay', inv:'Receipt' };
+
+const $$ = n => '$' + n.toFixed(2);
+const N = n => n.toLocaleString();
+const AL = () => CR.concat(S.cr || []);
+const cr = id => AL().find(c => c[0] === id);
+const dt = t => new Date(t).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+const tid = () => 'GF-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,6).toUpperCase();
+
+function seed() {
+  const d = 864e5, n = Date.now();
+  const m = (i, ty, ti, u, c, cid) => ({ id:'GF'+i, ts: n-i*d, type:ty, title:ti, usd:u, coins:c, cid, st:'Completed' });
+  return {
+    bal: 250,
+    coins: 1200,
+    tx: [
+      m(1,'gift','🌹 Rose sent to @lunaray',0,-50,'lunaray'),
+      m(2,'money','Sent to @chefmateo',-15,0,'chefmateo'),
+      m(4,'coins','Purchased 1,000 coins',-10,1000,''),
+      m(6,'gift','💎 Diamond sent to @beatbyjay',0,-500,'beatbyjay')
+    ]
+  };
+}
+
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+if (!S || !S.tx) S = seed();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e) {} };
+
+let st = [['home']], F = {}, filt = 'All', rst = false;
+
+// Avatar
+const AV = (c, z = 46) => `<div class="av" style="width:${z}px;height:${z}px;font-size:${z/2.8|0}px;background:linear-gradient(135deg,hsl(${c[4]},72%,58%),hsl(${c[4]+50},72%,48%))">${c[1].split(' ').map(w=>w[0]).join('')}</div>`;
+
+// Verified badge
+const VB = c => c[5] ? '' : '<span class="vb" title="Verified">✓</span>';
+
+const IC = { gift:'🎁', money:'💸', coins:'🪙' };
+const TX_LABEL = { gift:'Gift', money:'Transfer', coins:'Coins' };
+
+// Transaction row
+const R = t => `<div class="row" onclick="go('inv','${t.id}')">
+  <div class="av" style="width:44px;height:44px;background:var(--b2);font-size:20px;border-radius:14px;">${IC[t.type]}</div>
+  <div>
+    <b>${t.title}</b>
+    <span class="mu">${dt(t.ts)}</span>
+  </div>
+  <div class="r">${
+    t.type==='gift' ? `<span class="neg">-${N(-t.coins)} 🪙</span>` :
+    t.type==='money' ? `<span class="neg">-${$$(-t.usd)}</span>` :
+    `<span class="pos">+${N(t.coins)} 🪙</span><br><span class="mu">-${$$(-t.usd)}</span>`
+  }</div>
+</div>`;
+
+// Creator row
+const CRow = c => `<div class="row" onclick="go('prof','${c[0]}')">
+  ${AV(c)}
+  <div>
+    <b>${c[1]} ${VB(c)}</b>
+    <span class="mu">@${c[0]} · ${c[3]} followers</span>
+  </div>
+  <span class="mu" style="font-size:18px">›</span>
+</div>`;
+
+// Balance hero card
+const bal = () => `<div class="card hero">
+  <div class="bal-label">Available Balance</div>
+  <div class="big">${$$(S.bal)}</div>
+  <div class="coin-row">
+    <div class="coin-pill">🪙 ${N(S.coins)} coins</div>
+  </div>
+</div>`;
+
+// ── VIEWS ──────────────────────────────────────────────────────────────────
+const V = {
+
+  home: () => `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div>
+        <div class="mu">Good to see you 👋</div>
+        <h1>GiftFlow</h1>
+      </div>
+      <div class="tag">✦ Pro</div>
+    </div>
+    ${bal()}
+    <div class="g3" style="margin-top:4px">
+      <button class="tile" onclick="go('buy')" id="btn-buy-coins">
+        <div class="e">🪙</div>
+        <b>Buy Coins</b>
+      </button>
+      <button class="tile" onclick="tab('search')" id="btn-send-gift">
+        <div class="e">🎁</div>
+        <b>Send Gift</b>
+      </button>
+      <button class="tile" onclick="tab('search')" id="btn-send-money">
+        <div class="e">💸</div>
+        <b>Send Money</b>
+      </button>
+    </div>
+    <div class="section-label">Featured Creators</div>
+    ${CR.slice(0,3).map(CRow).join('')}
+    <div class="section-label">Recent Activity</div>
+    ${S.tx.slice(0,3).map(R).join('') || '<div class="empty"><div class="e-icon">📭</div><b>No activity yet</b><span>Your transactions will show here</span></div>'}
+  `,
+
+  search: () => `
+    <h1>Discover Creators</h1>
+    <p class="mu" style="margin-bottom:14px">Find and support your favourite creators</p>
+    <input id="q" placeholder="Search by name or @username" oninput="sq(this.value)" autocomplete="off" id="search-input">
+    <div id="sl" style="margin-top:14px">${AL().map(CRow).join('')}</div>
+    <button class="btn s" style="margin-top:6px" onclick="F={};go('add')" id="btn-add-creator">＋ Add Creator</button>
+  `,
+
+  add: () => `
+    <p class="mu" style="margin-bottom:16px">Add a creator to your list to send them gifts or money.</p>
+    <div class="input-group">
+      <div class="input-label">Username</div>
+      <input id="au" placeholder="e.g. janedoe" value="${F.nu||''}" maxlength="24">
+    </div>
+    <div class="input-group">
+      <div class="input-label">Display Name</div>
+      <input id="an" placeholder="Jane Doe" maxlength="30">
+    </div>
+    <div class="input-group">
+      <div class="input-label">Bio (optional)</div>
+      <input id="ab" placeholder="Short bio" maxlength="80">
+    </div>
+    <div class="input-group" style="margin-bottom:20px">
+      <div class="input-label">Followers (optional)</div>
+      <input id="af" placeholder="e.g. 12.5K" maxlength="10">
+    </div>
+    <button class="btn" onclick="saveCr()" id="btn-save-creator">Save Creator</button>
+  `,
+
+  prof: id => {
+    const c = cr(id);
+    return `
+      <div class="ctr" style="padding-top:10px">
+        <div style="display:flex;justify-content:center;margin-bottom:14px">${AV(c,96)}</div>
+        <h1 style="font-size:24px;margin-bottom:4px">${c[1]} ${VB(c)}</h1>
+        <div class="mu" style="margin-bottom:12px">@${c[0]}${c[5] ? '' : ' · Verified Creator'}</div>
+        <p style="margin-bottom:18px;color:var(--t);line-height:1.5">${c[2]}</p>
+        <div class="stat-card" style="margin:0 auto 20px;max-width:160px">
+          <b>${c[3]}</b><span>Followers</span>
+        </div>
+      </div>
+      <div class="two">
+        <button class="btn" onclick="F={cid:'${id}'};go('gift')" id="btn-gift-${id}">🎁 Send Gift</button>
+        <button class="btn s" onclick="F={cid:'${id}'};go('money')" id="btn-money-${id}">💸 Send Money</button>
+      </div>
+    `;
+  },
+
+  gift: () => `
+    <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      ${AV(cr(F.cid))}
+      <div>
+        <b>${cr(F.cid)[1]}</b>
+        <div class="mu">@${F.cid}</div>
+      </div>
+      <div class="coin-pill" style="margin-left:auto;background:var(--b2);color:var(--p)">🪙 ${N(S.coins)}</div>
+    </div>
+    <div class="section-label">Choose a Gift</div>
+    <div class="g3">
+      ${GF.map((g,i) => `<button class="tile ${F.g && F.g[0]===g[0] ? 'on' : ''}" onclick="F.g=GF[${i}];view()" id="gift-${g[0].toLowerCase()}">
+        <div class="e">${g[1]}</div>
+        <b>${g[0]}</b>
+        <div class="tc">${N(g[2])} coins</div>
+      </button>`).join('')}
+    </div>
+    <div style="height:18px"></div>
+    <button class="btn" onclick="nextGift()" id="btn-continue-gift">Continue</button>
+    <button class="btn s" style="margin-top:10px" onclick="go('buy')" id="btn-need-coins">Need coins? Top up</button>
+  `,
+
+  money: () => `
+    <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      ${AV(cr(F.cid))}
+      <div>
+        <b>${cr(F.cid)[1]}</b>
+        <div class="mu">@${F.cid}</div>
+      </div>
+      <div style="margin-left:auto;text-align:right">
+        <b style="font-size:15px">${$$(S.bal)}</b>
+        <div class="mu">Balance</div>
+      </div>
+    </div>
+    <div class="input-group">
+      <div class="input-label">Amount (USD)</div>
+      <input id="am" class="amt" type="number" inputmode="decimal" min="0" placeholder="0.00" value="${F.a||''}">
+    </div>
+    <div class="chips" style="margin-bottom:14px">
+      ${[5,10,25,50,100].map(v => `<button class="chip" onclick="$('#am').value=${v}">$${v}</button>`).join('')}
+    </div>
+    <div class="input-group" style="margin-bottom:20px">
+      <div class="input-label">Note (optional)</div>
+      <input id="nt" placeholder="Add a personal message…" maxlength="60" value="${F.n||''}">
+    </div>
+    <button class="btn" onclick="nextMoney()" id="btn-continue-money">Continue</button>
+  `,
+
+  buy: () => `
+    ${bal()}
+    <div class="section-label">Coin Packages</div>
+    ${PK.map((p,i) => `<div class="row" onclick="F={k:'coins',p:PK[${i}]};go('conf')" id="pkg-${p[0]}">
+      <div class="av" style="width:46px;height:46px;background:var(--b2);font-size:24px;border-radius:14px;">🪙</div>
+      <div>
+        <b>${N(p[0])} coins</b>
+        <span class="mu">Best for ${p[0]>=5000 ? 'heavy gifters' : p[0]>=1000 ? 'regular gifters' : 'occasional gifting'}</span>
+      </div>
+      <div class="r">${$$(p[1])}</div>
+    </div>`).join('')}
+  `,
+
+  conf: () => {
+    const k = F.k, c = F.cid && cr(F.cid);
+    const rows = k==='gift'
+      ? [['To', '@'+F.cid], ['Creator', c ? c[1] : '—'], ['Gift', F.g[1]+' '+F.g[0]], ['Cost', N(F.g[2])+' coins']]
+      : k==='money'
+      ? [['To', '@'+F.cid], ['Creator', c ? c[1] : '—'], ['Amount', $$(F.a)], ['Fee', '$0.00'], ...(F.n ? [['Note', F.n]] : [])]
+      : [['Package', N(F.p[0])+' coins'], ['Price', $$(F.p[1])]];
+    return `
+      <div class="card">
+        ${c ? `<div style="display:flex;gap:12px;align-items:center;margin-bottom:14px;padding-bottom:14px;border-bottom:1.5px solid var(--b)">${AV(c)}<div><b>${c[1]}</b><div class="mu">@${c[0]}</div></div></div>` : ''}
+        ${rows.map(r => `<div style="display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-bottom:1px solid var(--b)"><span class="mu">${r[0]}</span><b>${r[1]}</b></div>`).join('')}
+      </div>
+      <button class="btn" style="margin-top:4px" onclick="pay()" id="btn-confirm-pay">Confirm & Pay</button>
+    `;
+  },
+
+  proc: () => `
+    <div class="ctr">
+      <div class="spn"></div>
+      <h1>Processing…</h1>
+      <p class="mu" style="margin-top:8px">Securing your payment</p>
+    </div>
+  `,
+
+  ok: id => {
+    const t = S.tx.find(x => x.id === id);
+    return `
+      <div class="ctr">
+        <div class="ok-circle">
+          <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12l5 5 9-9"/>
+          </svg>
+        </div>
+        <h1>Payment Sent!</h1>
+        <p style="margin:8px 0 4px">${t.title}</p>
+        <p class="mu" style="margin-bottom:24px;font-size:12px">Reference: ${t.id}</p>
+        <button class="btn" onclick="go('inv','${id}')" id="btn-view-receipt">View Receipt</button>
+        <button class="btn s" style="margin-top:10px" onclick="tab('home')" id="btn-done">Done</button>
+      </div>
+    `;
+  },
+
+  inv: id => {
+    const t = S.tx.find(x => x.id === id);
+    return `
+      <div class="inv">
+        <div class="inv-header">
+          <div class="inv-brand">🎁 GiftFlow</div>
+          <div class="inv-badge">PAID</div>
+        </div>
+        ${IL(t).map(r => `<div class="l"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}
+      </div>
+      <div class="two" style="margin-top:14px">
+        <button class="btn" onclick="saveImg('${id}')" id="btn-save-receipt">💾 Save</button>
+        <button class="btn s" onclick="shareInv('${id}')" id="btn-share-receipt">📤 Share</button>
+      </div>
+      <button class="btn s" style="margin-top:10px" onclick="tab('home')" id="btn-receipt-done">Done</button>
+    `;
+  },
+
+  wallet: () => `
+    <h1>Wallet</h1>
+    <p class="mu" style="margin-bottom:14px">Manage your balance and coins</p>
+    ${bal()}
+    <div class="two">
+      <button class="btn" onclick="go('buy')" id="btn-wallet-buy">🪙 Buy Coins</button>
+      <button class="btn s" onclick="S.bal+=100;save();toast('$100.00 added to your wallet');view()" id="btn-add-funds">＋ Add Funds</button>
+    </div>
+    <div class="section-label">Recent Transactions</div>
+    ${S.tx.slice(0,5).map(R).join('') || '<div class="empty"><div class="e-icon">📭</div><b>No transactions yet</b></div>'}
+  `,
+
+  hist: () => {
+    const f = { All:()=>1, Gifts:t=>t.type==='gift', Money:t=>t.type==='money', 'Coins':t=>t.type==='coins' }[filt];
+    const l = S.tx.filter(f);
+    return `
+      <h1>Transactions</h1>
+      <p class="mu" style="margin-bottom:14px">${S.tx.length} total transactions</p>
+      <div class="chips">
+        ${['All','Gifts','Money','Coins'].map(x => `<button class="chip ${x===filt?'on':''}" onclick="filt='${x}';view()">${x}</button>`).join('')}
+      </div>
+      ${l.map(R).join('') || '<div class="empty"><div class="e-icon">📭</div><b>Nothing here yet</b></div>'}
+    `;
+  },
+
+  me: () => {
+    const g = S.tx.filter(t => t.type==='gift').length;
+    const s = -S.tx.filter(t => t.type==='money').reduce((a,t)=>a+t.usd,0);
+    return `
+      <div class="ctr" style="padding-top:10px">
+        <div class="av" style="width:90px;height:90px;font-size:30px;margin:auto;background:var(--g)">ME</div>
+        <h1 style="margin-top:14px;font-size:22px">My Profile</h1>
+        <p class="mu">@me · GiftFlow Member</p>
+      </div>
+      <div class="stats-bar">
+        <div class="stat-card"><b>${g}</b><span>Gifts Sent</span></div>
+        <div class="stat-card"><b>${$$(s)}</b><span>Total Sent</span></div>
+        <div class="stat-card"><b>${S.tx.length}</b><span>Transactions</span></div>
+      </div>
+      <div class="card">
+        <b style="font-size:15px">Account Settings</b>
+        <hr class="divider">
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer" onclick="toast('Coming soon')">
+          <span>Notifications</span><span class="mu">›</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer" onclick="toast('Coming soon')">
+          <span>Payment Methods</span><span class="mu">›</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer" onclick="toast('Coming soon')">
+          <span>Privacy & Security</span><span class="mu">›</span>
+        </div>
+      </div>
+      <button class="btn s" style="margin-top:4px;color:#e53e3e;border-color:#e53e3e22" onclick="resetD()" id="btn-reset">${rst ? 'Tap again to confirm' : 'Reset Account Data'}</button>
+    `;
+  }
+};
+
+// Invoice line items
+function IL(t) {
+  const c = t.cid && cr(t.cid);
+  return [
+    ['Receipt No.', t.id],
+    ['Date', dt(t.ts)],
+    ['Type', { gift:'Gift', money:'Money Transfer', coins:'Coin Purchase' }[t.type]],
+    ...(c ? [['Recipient', c[1] + ' (@' + c[0] + ')']] : []),
+    ['Details', t.title],
+    ['Amount', t.type==='gift' ? N(-t.coins)+' coins' : t.type==='money' ? $$(- t.usd) : N(t.coins)+' coins'],
+    ...(t.type==='coins' ? [['Charged', $$(-t.usd)]] : []),
+    ['Status', '✓ ' + t.st]
+  ];
+}
+
+// Render
+function view() {
+  const [n, a] = st[st.length - 1];
+  const isTab = ['home','search','wallet','hist','me'].includes(n);
+  $('#m').innerHTML = (isTab ? '' : `<div class="hd"><button class="bk" onclick="back()">‹</button><b>${TT[n]||''}</b></div>`) + `<div class="pg">${V[n](a)}</div>`;
+  $('#nav').style.display = isTab ? 'flex' : 'none';
+  $('#nav').innerHTML = [
+    ['home','🏠','Home'],
+    ['search','🔍','Discover'],
+    ['wallet','👛','Wallet'],
+    ['hist','🧾','History'],
+    ['me','👤','Profile']
+  ].map(x => `<button class="${st[0][0]===x[0]?'on':''}" onclick="tab('${x[0]}')" id="nav-${x[0]}"><span>${x[1]}</span>${x[2]}</button>`).join('');
+}
+
+const go = (n,a) => { st.push([n,a]); $('#m').scrollTop=0; view(); };
+const back = () => { if(st.length>1) st.pop(); view(); };
+const tab = n => { st=[[n]]; rst=false; view(); };
+
+function sq(v) {
+  v = v.toLowerCase().replace(/^@/,'').trim();
+  const u = v.replace(/[^a-z0-9._]/g,'');
+  const l = AL().filter(c => (c[0]+c[1]).toLowerCase().includes(v));
+  $('#sl').innerHTML = l.map(CRow).join('') || `
+    <div class="card" style="text-align:center;padding:28px">
+      <div style="font-size:40px;margin-bottom:10px">🔎</div>
+      <b>No creator found</b>
+      <p class="mu" style="margin:8px 0 14px">Can't find "@${u || v}"? Add them manually.</p>
+      ${u.length>1 ? `<button class="btn" onclick="F={nu:'${u}'};go('add')">Add @${u||v}</button>` : ''}
+    </div>`;
+}
+
+function toast(m) {
+  const e = $('#toast');
+  e.textContent = m;
+  e.classList.add('s');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => e.classList.remove('s'), 2400);
+}
+
+function saveCr() {
+  const u = $('#au').value.toLowerCase().replace(/^@/,'').trim();
+  if(!/^[a-z0-9._]{2,24}$/.test(u)) return toast('Username: 2–24 letters, numbers, . or _');
+  if(cr(u)) return toast('That username already exists');
+  (S.cr = S.cr || []).push([u, $('#an').value.trim()||u, $('#ab').value.trim()||'Creator', $('#af').value.trim()||'—', Math.floor(Math.random()*360), 1]);
+  save();
+  toast('Creator added');
+  st = [['search'],['prof',u]];
+  view();
+}
+
+function nextGift() {
+  if(!F.g) return toast('Please select a gift first');
+  if(S.coins < F.g[2]) return toast('Not enough coins — top up to continue');
+  F.k = 'gift';
+  go('conf');
+}
+
+function nextMoney() {
+  const a = Math.round(parseFloat($('#am').value)*100)/100;
+  F.n = $('#nt').value.trim();
+  if(!(a>0)) return toast('Please enter a valid amount');
+  if(a > S.bal) return toast('Insufficient balance');
+  F.a = a;
+  F.k = 'money';
+  go('conf');
+}
+
+function pay() { go('proc'); setTimeout(finish, 2000); }
+
+function finish() {
+  const k = F.k;
+  const t = { id:tid(), ts:Date.now(), cid:F.cid||'', st:'Completed', usd:0, coins:0 };
+  if(k==='gift') {
+    if(S.coins < F.g[2]) return fail();
+    t.type='gift'; t.coins=-F.g[2]; t.title=`${F.g[1]} ${F.g[0]} sent to @${F.cid}`;
+  } else if(k==='money') {
+    if(S.bal < F.a) return fail();
+    t.type='money'; t.usd=-F.a; t.title=`Sent to @${F.cid}`+(F.n?` — ${F.n}`:'');
+  } else {
+    if(S.bal < F.p[1]) return fail();
+    t.type='coins'; t.usd=-F.p[1]; t.coins=F.p[0]; t.title=`Purchased ${N(F.p[0])} coins`;
+  }
+  S.bal = Math.round((S.bal + t.usd)*100)/100;
+  S.coins += t.coins;
+  S.tx.unshift(t);
+  save();
+  st = [['home'],['ok',t.id]];
+  view();
+}
+
+function fail() { toast('Insufficient funds'); st=[['home']]; view(); }
+function resetD() {
+  if(!rst) { rst=true; view(); return; }
+  S = seed(); save(); rst=false; toast('Account data has been reset'); view();
+}
+
+// Canvas for receipt image
+function canvasFor(t) {
+  const cv = document.createElement('canvas');
+  cv.width = 640; cv.height = 900;
+  const x = cv.getContext('2d');
+  x.fillStyle = '#ffffff';
+  x.fillRect(0,0,640,900);
+
+  // Top gradient strip
+  const g = x.createLinearGradient(0,0,640,0);
+  g.addColorStop(0,'#6c4cf5'); g.addColorStop(1,'#ff5fa2');
+  x.fillStyle = g; x.fillRect(0,0,640,12);
+
+  // Brand
+  x.fillStyle = '#12102b';
+  x.font = 'bold 32px sans-serif';
+  x.fillText('🎁 GiftFlow', 40, 78);
+
+  // PAID badge
+  x.fillStyle = '#16a34a';
+  x.beginPath();
+  x.roundRect ? x.roundRect(500,54,100,30,15) : x.rect(500,54,100,30);
+  x.fill();
+  x.fillStyle = '#fff';
+  x.font = 'bold 14px sans-serif';
+  x.fillText('✓ PAID', 526, 73);
+
+  // Divider
+  x.fillStyle = '#e8e4f4';
+  x.fillRect(40, 100, 560, 1.5);
+
+  // Line items
+  IL(t).forEach((r,i) => {
+    const y = 145 + i*82;
+    x.fillStyle = '#6e6b8a';
+    x.font = '15px sans-serif';
+    x.fillText(r[0], 40, y);
+    x.fillStyle = '#12102b';
+    x.font = 'bold 19px sans-serif';
+    x.fillText(String(r[1]).slice(0,42), 40, y+28);
+    x.fillStyle = '#e8e4f4';
+    x.fillRect(40, y+44, 560, 1);
+  });
+
+  // Footer
+  x.fillStyle = '#9b98bb';
+  x.font = '14px sans-serif';
+  x.fillText('GiftFlow · Secure payment receipt', 40, 870);
+  return cv;
+}
+
+function saveImg(id) {
+  const t = S.tx.find(x => x.id===id);
+  canvasFor(t).toBlob(b => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(b);
+    a.download = `giftflow-receipt-${id}.png`;
+    document.body.appendChild(a); a.click(); a.remove();
+    toast('Receipt saved');
+  });
+}
+
+function shareInv(id) {
+  const t = S.tx.find(x => x.id===id);
+  const txt = 'GiftFlow Receipt\n' + IL(t).map(r => r.join(': ')).join('\n');
+  canvasFor(t).toBlob(async b => {
+    try {
+      const f = new File([b], `giftflow-receipt-${id}.png`, { type:'image/png' });
+      if(navigator.canShare && navigator.canShare({files:[f]})) {
+        await navigator.share({ files:[f], title:'GiftFlow Receipt', text:txt });
+      } else if(navigator.share) {
+        await navigator.share({ title:'GiftFlow Receipt', text:txt });
+      } else {
+        await navigator.clipboard.writeText(txt);
+        toast('Copied to clipboard');
+      }
+    } catch(e) {
+      if(e.name !== 'AbortError') toast('Use Save to download receipt');
+    }
+  });
+}
+
+// Init
+view();
+setTimeout(() => {
+  $('#sp').style.opacity = '0';
+  setTimeout(() => $('#sp').remove(), 520);
+}, 1200);
+if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+</script>
+</body>
+</html>
