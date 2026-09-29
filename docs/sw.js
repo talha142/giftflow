@@ -1,4 +1,4 @@
-const C = 'kudopay-v3';
+const C = 'kudopay-v4';
 const A = ['./', './index.html', './manifest.json', './icon-512.png'];
 
 self.addEventListener('install', e => {

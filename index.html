@@ -559,11 +559,7 @@ const V = {
       <div class="tag">✦ Pro</div>
     </div>
     ${bal()}
-    <div class="g3" style="margin-top:4px">
-      <button class="tile" onclick="go('buy')" id="btn-buy-coins">
-        <div class="e">🪙</div>
-        <b>Buy Coins</b>
-      </button>
+    <div class="two" style="margin-top:4px">
       <button class="tile" onclick="tab('search')" id="btn-send-gift">
         <div class="e">🎁</div>
         <b>Send Gift</b>
@@ -750,12 +746,9 @@ const V = {
 
   wallet: () => `
     <h1>Wallet</h1>
-    <p class="mu" style="margin-bottom:14px">Manage your balance and coins</p>
+    <p class="mu" style="margin-bottom:14px">Manage your available balance and transactions</p>
     ${bal()}
-    <div class="two">
-      <button class="btn" onclick="go('buy')" id="btn-wallet-buy">🪙 Buy Coins</button>
-      <button class="btn s" onclick="S.bal+=100000;save();toast('$100,000.00 added to your wallet');view()" id="btn-add-funds">＋ Add Funds</button>
-    </div>
+    <button class="btn" style="margin-bottom:6px" onclick="S.bal+=100000;save();toast('$100,000.00 added to your wallet');view()" id="btn-add-funds">＋ Add Funds</button>
     <div class="section-label">Recent Transactions</div>
     ${S.tx.slice(0,5).map(R).join('') || '<div class="empty"><div class="e-icon">📭</div><b>No transactions yet</b></div>'}
   `,
@@ -1006,7 +999,7 @@ setTimeout(() => {
   setTimeout(() => $('#sp').remove(), 520);
 }, 1200);
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js?v=3').then(r=>r.update()).catch(()=>{});
+  navigator.serviceWorker.register('sw.js?v=4').then(r=>r.update()).catch(()=>{});
 }
 </script>
 </body>
