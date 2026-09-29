@@ -4,12 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#6c4cf5">
-<meta name="description" content="GiftFlow — Send gifts and money to your favourite creators instantly.">
+<meta name="description" content="KudoPay — Send gifts, tips, and instant payments to your favourite creators.">
 <link rel="manifest" href="manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<title>GiftFlow — Gift Creators You Love</title>
+<title>KudoPay — Creator Payments & Rewards</title>
 <style>
 :root {
   --bg: #f5f4fb;
@@ -435,9 +435,9 @@ input::placeholder { color: var(--m); font-weight: 500; }
 <div id="app">
   <!-- Splash -->
   <div id="sp">
-    <div class="sp-icon">🎁</div>
-    <h1>GiftFlow</h1>
-    <p class="sp-sub">Send gifts to creators you love</p>
+    <div class="sp-icon">⚡</div>
+    <h1>KudoPay</h1>
+    <p class="sp-sub">Instant Creator Support & Payments</p>
   </div>
 
   <div id="m"></div>
@@ -446,7 +446,7 @@ input::placeholder { color: var(--m); font-weight: 500; }
 </div>
 
 <script>
-const $ = s => document.querySelector(s), KEY = 'giftflow_v2';
+const $ = s => document.querySelector(s), KEY = 'kudopay_v1';
 
 // Creators: [username, displayName, bio, followers, hue, isCustom]
 const CR = [
@@ -553,7 +553,7 @@ const V = {
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
       <div>
         <div class="mu">Good to see you 👋</div>
-        <h1>GiftFlow</h1>
+        <h1>KudoPay</h1>
       </div>
       <div class="tag">✦ Pro</div>
     </div>
@@ -734,7 +734,7 @@ const V = {
     return `
       <div class="inv">
         <div class="inv-header">
-          <div class="inv-brand">🎁 GiftFlow</div>
+          <div class="inv-brand">⚡ KudoPay</div>
           <div class="inv-badge">PAID</div>
         </div>
         ${IL(t).map(r => `<div class="l"><span>${r[0]}</span><b>${r[1]}</b></div>`).join('')}
@@ -779,7 +779,7 @@ const V = {
       <div class="ctr" style="padding-top:10px">
         <div class="av" style="width:90px;height:90px;font-size:30px;margin:auto;background:var(--g)">ME</div>
         <h1 style="margin-top:14px;font-size:22px">My Profile</h1>
-        <p class="mu">@me · GiftFlow Member</p>
+        <p class="mu">@me · KudoPay Member</p>
       </div>
       <div class="stats-bar">
         <div class="stat-card"><b>${g}</b><span>Gifts Sent</span></div>
@@ -932,7 +932,7 @@ function canvasFor(t) {
   // Brand
   x.fillStyle = '#12102b';
   x.font = 'bold 32px sans-serif';
-  x.fillText('🎁 GiftFlow', 40, 78);
+  x.fillText('⚡ KudoPay', 40, 78);
 
   // PAID badge
   x.fillStyle = '#16a34a';
@@ -963,7 +963,7 @@ function canvasFor(t) {
   // Footer
   x.fillStyle = '#9b98bb';
   x.font = '14px sans-serif';
-  x.fillText('GiftFlow · Secure payment receipt', 40, 870);
+  x.fillText('KudoPay · Secure payment receipt', 40, 870);
   return cv;
 }
 
@@ -972,7 +972,7 @@ function saveImg(id) {
   canvasFor(t).toBlob(b => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(b);
-    a.download = `giftflow-receipt-${id}.png`;
+    a.download = `kudopay-receipt-${id}.png`;
     document.body.appendChild(a); a.click(); a.remove();
     toast('Receipt saved');
   });
@@ -980,14 +980,14 @@ function saveImg(id) {
 
 function shareInv(id) {
   const t = S.tx.find(x => x.id===id);
-  const txt = 'GiftFlow Receipt\n' + IL(t).map(r => r.join(': ')).join('\n');
+  const txt = 'KudoPay Receipt\n' + IL(t).map(r => r.join(': ')).join('\n');
   canvasFor(t).toBlob(async b => {
     try {
-      const f = new File([b], `giftflow-receipt-${id}.png`, { type:'image/png' });
+      const f = new File([b], `kudopay-receipt-${id}.png`, { type:'image/png' });
       if(navigator.canShare && navigator.canShare({files:[f]})) {
-        await navigator.share({ files:[f], title:'GiftFlow Receipt', text:txt });
+        await navigator.share({ files:[f], title:'KudoPay Receipt', text:txt });
       } else if(navigator.share) {
-        await navigator.share({ title:'GiftFlow Receipt', text:txt });
+        await navigator.share({ title:'KudoPay Receipt', text:txt });
       } else {
         await navigator.clipboard.writeText(txt);
         toast('Copied to clipboard');

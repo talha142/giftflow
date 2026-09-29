@@ -1,14 +1,22 @@
-# GiftFlow Demo – installable app project
-Fully offline. Demo/simulation only. No backend, no real payments.
+# KudoPay – Creator Payments & Rewards App
 
-## Quick options
-1. **Instant install (no tools):** host the `www/` folder on any static host over HTTPS, open it on your phone, then "Add to Home Screen". The service worker makes it work offline.
-2. **Android APK (needs Node 18+, Android Studio + JDK 17):**
+KudoPay lets fans and supporters send tips, coins, and gifts to their favourite creators with instant receipts and offline support.
+
+## Live Web App (PWA)
+- **Live URL:** https://talha142.github.io/giftflow/
+- Fully installable on iOS and Android: open the link and tap "Add to Home Screen".
+- Offline ready with Service Worker and LocalStorage persistence.
+
+## Quick Options
+1. **Instant Web / PWA:**
+   Host the project on GitHub Pages, Vercel, or Netlify.
+2. **Android APK (Capacitor):**
+   ```bash
    npm install
    npm run setup      # adds Android project + generates icons
    npm run apk        # debug APK -> android/app/build/outputs/apk/debug/app-debug.apk
-   (or `npm run open` and press Run in Android Studio)
-3. **iOS:** needs a Mac + Xcode: `npm i @capacitor/ios && npx cap add ios && npx cap open ios`
-
-Edit `www/index.html` (all app code lives there), then `npm run sync`.
-Note: in the native app, PNG "Save" may need the Filesystem plugin; Share uses the system share sheet where supported.
+   ```
+3. **iOS:**
+   ```bash
+   npm i @capacitor/ios && npx cap add ios && npx cap open ios
+   ```
