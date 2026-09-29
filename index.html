@@ -1006,7 +1006,7 @@ setTimeout(() => {
   setTimeout(() => $('#sp').remove(), 520);
 }, 1200);
 if('serviceWorker' in navigator && location.protocol.startsWith('http')) {
-  navigator.serviceWorker.register('sw.js').catch(()=>{});
+  navigator.serviceWorker.register('sw.js?v=3').then(r=>r.update()).catch(()=>{});
 }
 </script>
 </body>
